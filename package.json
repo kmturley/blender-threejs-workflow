@@ -1,0 +1,34 @@
+{
+  "name": "blender-threejs-workflow",
+  "version": "1.0.0",
+  "description": "Example Blender to Three.js workflow using gltf format",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server --open",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch"
+  },
+  "keywords": [
+    "Blender",
+    "Three.js",
+    "Workflow",
+    "3D"
+  ],
+  "author": "kmturley",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.110.0"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.2.0",
+    "file-loader": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^8.0.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  }
+}
