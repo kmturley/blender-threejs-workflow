@@ -16,6 +16,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new CopyPlugin([
       { from: './src/index.html' },
+      { from: './src/models', to: './models' },
     ]),
   ],
   devServer: {

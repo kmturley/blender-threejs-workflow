@@ -1,7 +1,7 @@
 import './index.scss';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 function setupRenderer() {
   var renderer = new THREE.WebGLRenderer();
@@ -32,25 +32,36 @@ function setupScene(camera) {
 function setupGlobe(scene) {
   var texture_bg = 'https://images.designtrends.com/wp-content/uploads/2015/12/17112023/outer-space-Texture.jpg';
   var texture_globe = 'https://i.postimg.cc/nn74Bznd/earth.png';
+  // var model_globe = 'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf';
+  var model_globe = './models/earth.gltf';
+  var model_scale = 3;
 
   var loader = new THREE.TextureLoader();
   loader.load(texture_bg, function (texture) {
     scene.background = texture;
   });
 
-  var pointLight = new THREE.PointLight(0xFFFFFF);
-  pointLight.position.set(10, 50, 400);
+  var pointLight = new THREE.PointLight(0xFFFFFF, 1, 4000);
+  pointLight.position.set(10, 500, 400);
   scene.add(pointLight);
 
   var globe = new THREE.Group();
   scene.add(globe);
 
-  var loader2 = new THREE.TextureLoader();
-  loader2.load(texture_globe, function (texture) {
-    var sphere = new THREE.SphereGeometry(200, 50, 50);
-    var material = new THREE.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
-    var mesh = new THREE.Mesh(sphere, material);
-    globe.add(mesh);
+  // Example using basic shapes.
+  // var loader2 = new THREE.TextureLoader();
+  // loader2.load(texture_globe, function (texture) {
+  //   var sphere = new THREE.SphereGeometry(200, 50, 50);
+  //   var material = new THREE.MeshBasicMaterial({ map: texture, overdraw: 0.5 });
+  //   var mesh = new THREE.Mesh(sphere, material);
+  //   globe.add(mesh);
+  // });
+
+  // Example using model file
+  var loader3 = new GLTFLoader();
+  loader3.load(model_globe, function (gltf) {
+    globe.add(gltf.scene);
+    globe.scale.set(model_scale, model_scale, model_scale);
   });
 
   return globe;
