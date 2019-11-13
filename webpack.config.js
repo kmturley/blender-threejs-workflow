@@ -1,6 +1,8 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+
+const OUTPUT_FOLDER = 'dist';
 
 module.exports = {
   entry: {
@@ -8,16 +10,17 @@ module.exports = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, OUTPUT_FOLDER),
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      title: 'Blender Three.js workflow',
-    }),
+    new CopyPlugin([
+      { from: './src/index.html' },
+    ]),
   ],
   devServer: {
-    contentBase: './dist',
+    contentBase: './' + OUTPUT_FOLDER,
+    hot: true
   },
   module: {
     rules: [

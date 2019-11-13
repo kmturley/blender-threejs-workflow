@@ -15,7 +15,7 @@ Install dependencies using:
 
 ## Usage
 
-Run backend, frontend and proxy together using:
+Run the dev server using:
 
     npm start
 
