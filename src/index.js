@@ -18,8 +18,11 @@ function setupCamera() {
 
 function setupControls(camera, renderer) {
   var controls = new OrbitControls(camera, renderer.domElement);
+  controls.autoRotate = true;
   controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
+  controls.minDistance = 200;
+  controls.maxDistance = 1000;
+  controls.zoomSpeed = .5;
   return controls;
 }
 
@@ -67,21 +70,6 @@ function setupGlobe(scene) {
   return globe;
 }
 
-function setupKeyboard(globe) {
-  document.onkeydown = function (e) {
-    e = e || window.event;
-    e.preventDefault();
-    if (e.keyCode == '38') {
-      globe.rotation.x -= 0.1;
-    } else if (e.keyCode == '40') {
-      globe.rotation.x += 0.1;
-    } else if (e.keyCode == '37') {
-      globe.rotation.y -= 0.1;
-    } else if (e.keyCode == '39') {
-      globe.rotation.y += 0.1;
-    }
-  }
-}
 
 function setupResize(camera, renderer) {
   window.addEventListener('resize', function () {
@@ -106,7 +94,6 @@ function setup() {
   const controls = setupControls(camera, renderer);
   const scene = setupScene(camera);
   const globe = setupGlobe(scene);
-  setupKeyboard(globe);
   setupResize(camera, renderer);
   setupAnimate(controls, renderer, scene, camera);
 }
