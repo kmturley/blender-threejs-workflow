@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 function setupRenderer() {
-  const renderer = new THREE.WebGLRenderer();
+  const renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
   return renderer;
@@ -33,16 +33,26 @@ function setupScene(camera) {
 }
 
 function setupGlobe(scene) {
-  const texture_bg = 'https://images.designtrends.com/wp-content/uploads/2015/12/17112023/outer-space-Texture.jpg';
-  const texture_globe = 'https://i.postimg.cc/nn74Bznd/earth.png';
-  // const model_globe = 'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf';
+  const texture_bg = './textures/space.jpg';
   const model_globe = './models/earth.gltf';
   const model_scale = 3;
 
-  const loader = new THREE.TextureLoader();
-  loader.load(texture_bg, (texture) => {
-    scene.background = texture;
-  });
+  const loader = new THREE.CubeTextureLoader();
+  const texture = loader.load([
+    texture_bg,
+    texture_bg,
+    texture_bg,
+    texture_bg,
+    texture_bg,
+    texture_bg,
+  ]);
+  scene.background = texture;
+
+  // Example using basic background
+  // const loader = new THREE.TextureLoader();
+  // loader.load(texture_bg, (texture) => {
+  //   scene.background = texture;
+  // });
 
   const pointLight = new THREE.PointLight(0xFFFFFF, 1, 4000);
   pointLight.position.set(10, 500, 400);
@@ -52,6 +62,7 @@ function setupGlobe(scene) {
   scene.add(globe);
 
   // Example using basic shapes.
+  // const texture_globe = 'https://i.postimg.cc/nn74Bznd/earth.png';
   // const loader2 = new THREE.TextureLoader();
   // loader2.load(texture_globe, (texture) => {
   //   const sphere = new THREE.SphereGeometry(200, 50, 50);
