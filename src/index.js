@@ -91,10 +91,42 @@ function setupResize(camera, renderer) {
   });
 }
 
-function setupAnimate(controls, renderer, scene, camera) {
+function setupVector() {
+  const vector = new THREE.Vector2();
+  document.addEventListener('mousemove', (event) => {
+    event.preventDefault();
+    vector.x = (event.clientX / window.innerWidth) * 2 - 1;
+    vector.y = - (event.clientY / window.innerHeight) * 2 + 1;
+  });
+  return vector;
+}
+
+function setupAnimate(controls, renderer, scene, camera, vector) {
+  const raycaster = new THREE.Raycaster();
+  let intersected = false;
+  const vectors = () => {
+    raycaster.setFromCamera(vector, camera);
+    var intersects = raycaster.intersectObjects(scene.children, true);
+    if (intersects.length > 0) {
+      if (intersected != intersects[0].object) {
+        if (intersected) {
+          intersected.material.emissive.setHex(intersected.currentHex);
+        }
+        intersected = intersects[0].object;
+        intersected.currentHex = intersected.material.emissive.getHex();
+        intersected.material.emissive.setHex( 0xff0000 );
+      }
+    } else {
+      if (intersected) {
+        intersected.material.emissive.setHex(intersected.currentHex);
+      }
+      intersected = null;
+    }
+  };
   const animate = () => {
     requestAnimationFrame(animate);
     controls.update();
+    vectors();
     renderer.render(scene, camera);
   };
   animate();
@@ -105,9 +137,10 @@ function setup() {
   const camera = setupCamera();
   const controls = setupControls(camera, renderer);
   const scene = setupScene(camera);
-  const globe = setupGlobe(scene);
+  const vector = setupVector();
+  setupGlobe(scene);
   setupResize(camera, renderer);
-  setupAnimate(controls, renderer, scene, camera);
+  setupAnimate(controls, renderer, scene, camera, vector);
 }
 
 setup();
