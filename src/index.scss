@@ -1,8 +1,22 @@
 body {
+  font-family: sans-serif;
   margin: 0;
 }
 
-canvas {
+.nav {
+  color: #fff;
+  padding: 2rem;
+  position: absolute;
+  z-index: 2;
+
+  h1 {
+    font-weight: normal;
+    margin: 0;
+  }
+}
+
+.scene,
+.scene canvas {
   height: 100%;
   width: 100%;
 }

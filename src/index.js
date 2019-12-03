@@ -4,9 +4,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 function setupRenderer() {
+  const el = document.getElementById('scene');
   const renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+  el.appendChild(renderer.domElement);
   return renderer;
 }
 
