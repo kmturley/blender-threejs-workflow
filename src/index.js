@@ -1,5 +1,6 @@
 import './index.scss';
 import * as THREE from 'three';
+import TWEEN from '@tweenjs/tween.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -27,7 +28,7 @@ function setupControls(camera, renderer) {
   controls.enableDamping = true;
   controls.minDistance = 200;
   controls.maxDistance = 1000;
-  controls.zoomSpeed = .5;
+  controls.zoomSpeed = .2;
   return controls;
 }
 
@@ -111,34 +112,19 @@ function setupGlobe(scene) {
 
 function setupLocation(scene, complete) {
   let mixer;
-  const path = 'https://threejs.org/examples/textures/cube/Park2/';
-  const format = '.jpg';
-  const envMap = new THREE.CubeTextureLoader().load( [
-    path + 'posx' + format, path + 'negx' + format,
-    path + 'posy' + format, path + 'negy' + format,
-    path + 'posz' + format, path + 'negz' + format
-  ] );
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath('https://threejs.org/examples/js/libs/draco/gltf/');
   const loader = new GLTFLoader();
-  loader.setDRACOLoader( dracoLoader );
+  loader.setDRACOLoader(dracoLoader);
   loader.load('https://threejs.org/examples/models/gltf/LittlestTokyo.glb', (gltf) => {
     const model = gltf.scene;
     model.scale.set(.2, .2, .2);
     const box = new THREE.Box3().setFromObject(model);
-    const offset = (box.getSize().y / 2);
-    model.position.set(12, 140 + offset, 0);
-    model.traverse((child) => {
-      if (child.isMesh) {
-        child.material.envMap = envMap;
-      }
-    });
+    model.position.set(12, 140 + (box.getSize().y / 2), 0);
     scene.add(model);
     mixer = new THREE.AnimationMixer(model);
     mixer.clipAction(gltf.animations[0]).play();
     complete(mixer);
-  }, undefined, (e) => {
-    console.error(e);
   });
 }
 
@@ -150,7 +136,7 @@ function setupResize(camera, renderer) {
   });
 }
 
-function setupInteractions(camera, controls) {
+function setupInteractions(camera, globe) {
   const vector = new THREE.Vector2();
   let isDragging = false;
   document.addEventListener('mousedown', (event) => {
@@ -171,13 +157,46 @@ function setupInteractions(camera, controls) {
     event.preventDefault();
     if (intersected) {
       console.log('intersected', intersected);
-      zoomCameraToSelection(camera, controls, [intersected]);
+      // zoomCameraToSelection(camera, controls, [intersected]);
+      zoomCameraWithTransition(camera, intersected);
     } else {
-      controls.reset();
-      camera.position.set(0, 0, 600);
+      zoomCameraWithTransition(camera, intersected);
+      // controls.reset();
+      // camera.position.set(0, 0, 600);
     }
   });
   return vector;
+}
+
+function zoomCameraWithTransition(camera, model) {
+  const box = new THREE.Box3().setFromObject(model);
+  const center = box.getCenter();
+  const size = box.getSize();
+  const maxSize = Math.max(size.x, size.y, size.z);
+  const fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
+  const fitWidthDistance = fitHeightDistance / camera.aspect;
+  const distance = 1.2 * Math.max( fitHeightDistance, fitWidthDistance );
+  console.log('center', center, distance);
+  return new TWEEN.Tween({
+      x: camera.position.x,
+      y: camera.position.y,
+      z: camera.position.z,
+      zoom: camera.zoom,
+    })
+    .to({
+      x: center.x,
+      y: center.y,
+      z: center.z + distance,
+    }, 1000)
+    .easing(TWEEN.Easing.Quadratic.Out)
+    .onUpdate((position) => {
+      camera.position.set(position.x, position.y, position.z);
+      // camera.lookAt(new THREE.Vector3(position.x, position.y, position.z));
+    })
+    .onComplete((position) => {
+      // camera.lookAt(new THREE.Vector3(position.x, position.y, position.z));
+    })
+    .start();
 }
 
 function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
@@ -225,6 +244,7 @@ function setupAnimate(controls, renderer, scene, camera, interactions, clock, lo
     }
   };
   const animate = () => {
+    TWEEN.update();
     requestAnimationFrame(animate);
     const delta = clock.getDelta();
     location.update(delta);
@@ -241,11 +261,11 @@ function setup() {
   const camera = setupCamera();
   const controls = setupControls(camera, renderer);
   const scene = setupScene(camera);
-  const interactions = setupInteractions(camera, controls);
+  const sphere = setupSphere(scene);
+  const interactions = setupInteractions(camera, sphere);
   setupLights(scene, camera);
   setupSky(scene);
   // setupGlobe(scene);
-  setupSphere(scene);
   setupLocation(scene, (location) => {
     setupResize(camera, renderer);
     setupAnimate(controls, renderer, scene, camera, interactions, clock, location);
