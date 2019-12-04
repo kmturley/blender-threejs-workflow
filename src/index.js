@@ -4,6 +4,8 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+let intersected = false;
+
 function setupRenderer() {
   const el = document.getElementById('scene');
   const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -148,19 +150,59 @@ function setupResize(camera, renderer) {
   });
 }
 
-function setupInteractions() {
+function setupInteractions(camera, controls) {
   const vector = new THREE.Vector2();
+  let isDragging = false;
+  document.addEventListener('mousedown', (event) => {
+    event.preventDefault();
+    isDragging = false;
+  });
   document.addEventListener('mousemove', (event) => {
     event.preventDefault();
+    isDragging = true;
     vector.x = (event.clientX / window.innerWidth) * 2 - 1;
     vector.y = - (event.clientY / window.innerHeight) * 2 + 1;
+  });
+  document.addEventListener('mouseup', (event) => {
+    if (isDragging) {
+      isDragging = false;
+      return;
+    }
+    event.preventDefault();
+    if (intersected) {
+      console.log('intersected', intersected);
+      zoomCameraToSelection(camera, controls, [intersected]);
+    } else {
+      controls.reset();
+      camera.position.set(0, 0, 600);
+    }
   });
   return vector;
 }
 
+function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
+  const box = new THREE.Box3();
+  for (const object of selection) {
+    box.expandByObject(object);
+  }
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const maxSize = Math.max(size.x, size.y, size.z);
+  const fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
+  const fitWidthDistance = fitHeightDistance / camera.aspect;
+  const distance = fitOffset * Math.max( fitHeightDistance, fitWidthDistance );
+  const direction = controls.target.clone()
+    .sub(camera.position)
+    .normalize()
+    .multiplyScalar(distance);
+  controls.target.copy(center);
+  camera.updateProjectionMatrix();
+  camera.position.copy(controls.target).sub(direction);
+  controls.update();
+}
+
 function setupAnimate(controls, renderer, scene, camera, interactions, clock, location) {
   const raycaster = new THREE.Raycaster();
-  let intersected = false;
   const vectors = () => {
     raycaster.setFromCamera(interactions, camera);
     var intersects = raycaster.intersectObjects(scene.children, true);
@@ -199,7 +241,7 @@ function setup() {
   const camera = setupCamera();
   const controls = setupControls(camera, renderer);
   const scene = setupScene(camera);
-  const interactions = setupInteractions();
+  const interactions = setupInteractions(camera, controls);
   setupLights(scene, camera);
   setupSky(scene);
   // setupGlobe(scene);
