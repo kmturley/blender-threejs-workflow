@@ -136,7 +136,7 @@ function setupResize(camera, renderer) {
   });
 }
 
-function setupInteractions(camera, globe) {
+function setupInteractions(camera, controls, globe) {
   const vector = new THREE.Vector2();
   let isDragging = false;
   document.addEventListener('mousedown', (event) => {
@@ -157,67 +157,31 @@ function setupInteractions(camera, globe) {
     event.preventDefault();
     if (intersected) {
       console.log('intersected', intersected);
-      // zoomCameraToSelection(camera, controls, [intersected]);
-      zoomCameraWithTransition(camera, intersected);
+      zoomCameraWithTransition(camera, controls, intersected);
     } else {
-      zoomCameraWithTransition(camera, intersected);
-      // controls.reset();
-      // camera.position.set(0, 0, 600);
+      zoomCameraWithTransition(camera, controls, globe, 1.5);
     }
   });
   return vector;
 }
 
-function zoomCameraWithTransition(camera, model) {
+function zoomCameraWithTransition(camera, controls, model, fitOffset = 1.2) {
+  // distance
   const box = new THREE.Box3().setFromObject(model);
   const center = box.getCenter();
   const size = box.getSize();
   const maxSize = Math.max(size.x, size.y, size.z);
   const fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
   const fitWidthDistance = fitHeightDistance / camera.aspect;
-  const distance = 1.2 * Math.max( fitHeightDistance, fitWidthDistance );
-  console.log('center', center, distance);
-  return new TWEEN.Tween({
-      x: camera.position.x,
-      y: camera.position.y,
-      z: camera.position.z,
-      zoom: camera.zoom,
-    })
-    .to({
-      x: center.x,
-      y: center.y,
-      z: center.z + distance,
-    }, 1000)
-    .easing(TWEEN.Easing.Quadratic.Out)
-    .onUpdate((position) => {
-      camera.position.set(position.x, position.y, position.z);
-      // camera.lookAt(new THREE.Vector3(position.x, position.y, position.z));
-    })
-    .onComplete((position) => {
-      // camera.lookAt(new THREE.Vector3(position.x, position.y, position.z));
-    })
-    .start();
-}
-
-function zoomCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
-  const box = new THREE.Box3();
-  for (const object of selection) {
-    box.expandByObject(object);
-  }
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-  const maxSize = Math.max(size.x, size.y, size.z);
-  const fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
-  const fitWidthDistance = fitHeightDistance / camera.aspect;
-  const distance = fitOffset * Math.max( fitHeightDistance, fitWidthDistance );
-  const direction = controls.target.clone()
-    .sub(camera.position)
-    .normalize()
-    .multiplyScalar(distance);
-  controls.target.copy(center);
-  camera.updateProjectionMatrix();
-  camera.position.copy(controls.target).sub(direction);
-  controls.update();
+  const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
+  const cameraCoords = {
+    x: center.x,
+    y : center.y,
+    z : center.z + distance
+  };
+  console.log('center', center, cameraCoords);
+  const cameraAnim = new TWEEN.Tween(camera.position).to(cameraCoords, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
+  const controlsAnim = new TWEEN.Tween(controls.target).to(center, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
 }
 
 function setupAnimate(controls, renderer, scene, camera, interactions, clock, location) {
@@ -262,7 +226,7 @@ function setup() {
   const controls = setupControls(camera, renderer);
   const scene = setupScene(camera);
   const sphere = setupSphere(scene);
-  const interactions = setupInteractions(camera, sphere);
+  const interactions = setupInteractions(camera, controls, sphere);
   setupLights(scene, camera);
   setupSky(scene);
   // setupGlobe(scene);
