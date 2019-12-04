@@ -17,6 +17,7 @@ module.exports = {
     new CopyPlugin([
       { from: './src/index.html' },
       { from: './src/models', to: './models' },
+      { from: './src/textures', to: './textures' },
     ]),
   ],
   devServer: {
