@@ -59,7 +59,12 @@
         },
         {
             "mesh" : 0,
-            "name" : "Suzanne"
+            "name" : "Suzanne",
+            "translation" : [
+                0,
+                0.9801072478294373,
+                0
+            ]
         }
     ],
     "animations" : [

@@ -5,17 +5,21 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const SPHERE_SIZE = 150;
+const SPHERE_RADIUS = 150;
 
 const animations = [];
 let intersected = false;
 
-function randomPosition(model) {
-  model.position.x = Math.random() * 2 - 1;
-  model.position.y = Math.random() * 2 - 1;
-  model.position.z = Math.random() * 2 - 1;
-  model.position.normalize();
-  model.position.multiplyScalar(SPHERE_SIZE);
+function randomRotation() {
+  return Math.random() * 360;
+}
+
+function addToSphere(scene, model, offset = 0) {
+  const stick = new THREE.Object3D();
+  model.position.set(0, SPHERE_RADIUS + offset, 0);
+  stick.add(model);
+  stick.rotation.set(randomRotation(), randomRotation(), randomRotation());
+  scene.add(stick);
 }
 
 function animateModel(model, gltf) {
@@ -99,7 +103,7 @@ function setupSphere(scene) {
   // return globe;
 
   // Example using flat shading
-  const geometry = new THREE.SphereBufferGeometry(SPHERE_SIZE, 12, 9);
+  const geometry = new THREE.SphereBufferGeometry(SPHERE_RADIUS, 12, 9);
   const material = new THREE.MeshPhongMaterial({
     flatShading: true,
     color: 0x0000ff,
@@ -115,15 +119,13 @@ function setupGlobe(scene) {
   const loader3 = new GLTFLoader();
   loader3.load(model_globe, (gltf) => {
     const model = gltf.scene;
-    randomPosition(model);
-    animateModel(model, gltf);
-    scene.add(model);
     model.scale.set(model_scale, model_scale, model_scale);
+    addToSphere(scene, model);
+    animateModel(model, gltf);
   });
 }
 
 function setupLocation(scene) {
-  let mixer;
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath('https://threejs.org/examples/js/libs/draco/gltf/');
   const loader = new GLTFLoader();
@@ -131,9 +133,8 @@ function setupLocation(scene) {
   loader.load('https://threejs.org/examples/models/gltf/LittlestTokyo.glb', (gltf) => {
     const model = gltf.scene;
     model.scale.set(.2, .2, .2);
-    randomPosition(model);
+    addToSphere(scene, model, 35);
     animateModel(model, gltf);
-    scene.add(model);
   });
 }
 
