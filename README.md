@@ -26,7 +26,7 @@ Then view the local server at:
 
 ## Exporting models
 
-Ensure you are using Blender 2.8 which has GLTF exporting built-in:
+Ensure you are using Blender 2.8.1 which has GLTF exporting built-in:
 
     https://www.blender.org/download/
 
@@ -44,7 +44,16 @@ Replace material is necessary using:
 
 Export the file using:
 
-    File > Export > glTF 2.0 > Format > glTF Separate
+    File > Export > glTF
+
+Ensure the options are selected:
+
+    Transform -> +Y Up
+    Animations -> Always sample animations
+
+Test your exported animation in a viewer:
+
+    https://gltf-viewer.donmccurdy.com/
 
 
 ## Directory structure

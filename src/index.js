@@ -5,7 +5,28 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+const SPHERE_RADIUS = 150;
+
+const animations = [];
 let intersected = false;
+
+function randomRotation() {
+  return Math.random() * 360;
+}
+
+function addToSphere(scene, model, offset = 0) {
+  const stick = new THREE.Object3D();
+  model.position.set(0, SPHERE_RADIUS + offset, 0);
+  stick.add(model);
+  stick.rotation.set(randomRotation(), randomRotation(), randomRotation());
+  scene.add(stick);
+}
+
+function animateModel(model, gltf) {
+  let mixer = new THREE.AnimationMixer(model);
+  mixer.clipAction(gltf.animations[0]).play();
+  animations.push(mixer);
+}
 
 function setupRenderer() {
   const el = document.getElementById('scene');
@@ -82,36 +103,29 @@ function setupSphere(scene) {
   // return globe;
 
   // Example using flat shading
-  const globe = new THREE.Group();
-  const geometry = new THREE.SphereBufferGeometry(150, 12, 9);
+  const geometry = new THREE.SphereBufferGeometry(SPHERE_RADIUS, 12, 9);
   const material = new THREE.MeshPhongMaterial({
     flatShading: true,
     color: 0x0000ff,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  globe.add(mesh);
-  scene.add(globe);
-  return globe;
+  scene.add(mesh);
+  return mesh;
 }
 
 function setupGlobe(scene) {
-  const model_globe = './models/earth.gltf';
-  const model_scale = 3;
-
-  const globe = new THREE.Group();
-  scene.add(globe);
-
+  const model_globe = './models/monkey.gltf';
+  const model_scale = 30;
   const loader3 = new GLTFLoader();
   loader3.load(model_globe, (gltf) => {
-    globe.add(gltf.scene);
-    globe.scale.set(model_scale, model_scale, model_scale);
+    const model = gltf.scene;
+    model.scale.set(model_scale, model_scale, model_scale);
+    addToSphere(scene, model);
+    animateModel(model, gltf);
   });
-
-  return globe;
 }
 
-function setupLocation(scene, complete) {
-  let mixer;
+function setupLocation(scene) {
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath('https://threejs.org/examples/js/libs/draco/gltf/');
   const loader = new GLTFLoader();
@@ -119,12 +133,8 @@ function setupLocation(scene, complete) {
   loader.load('https://threejs.org/examples/models/gltf/LittlestTokyo.glb', (gltf) => {
     const model = gltf.scene;
     model.scale.set(.2, .2, .2);
-    const box = new THREE.Box3().setFromObject(model);
-    model.position.set(12, 140 + (box.getSize().y / 2), 0);
-    scene.add(model);
-    mixer = new THREE.AnimationMixer(model);
-    mixer.clipAction(gltf.animations[0]).play();
-    complete(mixer);
+    addToSphere(scene, model, 35);
+    animateModel(model, gltf);
   });
 }
 
@@ -184,7 +194,7 @@ function zoomCameraWithTransition(camera, controls, model, fitOffset = 1.2) {
   const controlsAnim = new TWEEN.Tween(controls.target).to(center, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
 }
 
-function setupAnimate(controls, renderer, scene, camera, interactions, clock, location) {
+function setupAnimate(controls, renderer, scene, camera, interactions, clock) {
   const raycaster = new THREE.Raycaster();
   const vectors = () => {
     raycaster.setFromCamera(interactions, camera);
@@ -211,7 +221,9 @@ function setupAnimate(controls, renderer, scene, camera, interactions, clock, lo
     TWEEN.update();
     requestAnimationFrame(animate);
     const delta = clock.getDelta();
-    location.update(delta);
+    animations.forEach((animation) => {
+      animation.update(delta);
+    });
     controls.update(delta);
     vectors();
     renderer.render(scene, camera);
@@ -229,11 +241,10 @@ function setup() {
   const interactions = setupInteractions(camera, controls, sphere);
   setupLights(scene, camera);
   setupSky(scene);
-  // setupGlobe(scene);
-  setupLocation(scene, (location) => {
-    setupResize(camera, renderer);
-    setupAnimate(controls, renderer, scene, camera, interactions, clock, location);
-  });
+  setupGlobe(scene);
+  setupLocation(scene);
+  setupResize(camera, renderer);
+  setupAnimate(controls, renderer, scene, camera, interactions, clock);
 }
 
 setup();
