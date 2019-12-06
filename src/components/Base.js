@@ -67,20 +67,32 @@ export class Base {
     });
   }
 
+  addEvents(el, events, callback) {
+    events.forEach((event) => {
+      el.addEventListener(event, callback, {passive: false});
+    });
+  }
+
   setupInteractions(camera, controls) {
+    const el = document.getElementById(this.options.id).firstChild;
     const vector = new THREE.Vector2();
     let isDragging = false;
-    document.addEventListener('mousedown', (event) => {
+    this.addEvents(el, ['mousedown', 'touchstart'], (event) => {
       event.preventDefault();
       isDragging = false;
     });
-    document.addEventListener('mousemove', (event) => {
+    this.addEvents(el, ['mousemove', 'touchmove'], (event) => {
       event.preventDefault();
       isDragging = true;
-      vector.x = (event.clientX / window.innerWidth) * 2 - 1;
-      vector.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      if (event.targetTouches) {
+        vector.x = (event.targetTouches[0].pageX / window.innerWidth) * 2 - 1;
+        vector.y = - (event.targetTouches[0].pageY / window.innerHeight) * 2 + 1;
+      } else {
+        vector.x = (event.clientX / window.innerWidth) * 2 - 1;
+        vector.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      }
     });
-    document.addEventListener('mouseup', (event) => {
+    this.addEvents(el, ['mouseup', 'touchcancel', 'touchend'], (event) => {
       if (isDragging) {
         isDragging = false;
         return;
@@ -109,7 +121,7 @@ export class Base {
       y : center.y,
       z : center.z + distance
     };
-    console.log('center', center, cameraCoords);
+    console.log('zoomCameraWithTransition', center, cameraCoords);
     const cameraAnim = new TWEEN.Tween(camera.position).to(cameraCoords, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
     const controlsAnim = new TWEEN.Tween(controls.target).to(center, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
   }
