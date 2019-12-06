@@ -4,6 +4,8 @@ Example Blender to Three.js workflow using gltf format using:
 
 * ThreeJS 0.110.x
 * Webpack 4.41.x
+* Babel 7.7.x
+* Tween.js 18.4.x
 
 
 ## Installation
@@ -60,6 +62,7 @@ Test your exported animation in a viewer:
 
     /                                 --> Project root
     /src                              --> Frontend sources files
+    /src-blender                      --> Blender example project
 
 
 ## Contact
