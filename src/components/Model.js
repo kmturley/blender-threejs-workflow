@@ -13,14 +13,16 @@ export class Model {
       dracoLoader.setDecoderPath(options.decoder);
       this.loader.setDRACOLoader(dracoLoader);
     }
-    this.load(base, globe, options.path, options.scale);
+    this.load(base, globe, options.path, options.scale, options.offset);
   }
 
-  load(base, globe, path, scale) {
+  load(base, globe, path, scale, offset = 0) {
     this.loader.load(path, (gltf) => {
       gltf.scene.scale.set(scale, scale, scale);
-      globe.addModel(gltf.scene);
-      base.addAnimation(gltf.scene, gltf);
+      globe.addModel(gltf.scene, offset);
+      if (gltf.animations) {
+        base.addAnimation(gltf.scene, gltf);
+      }
     });
   }
 }

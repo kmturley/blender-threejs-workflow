@@ -20,5 +20,6 @@ const monkey = new Model(base, globe, {
 const house = new Model(base, globe, {
   decoder: 'https://threejs.org/examples/js/libs/draco/gltf/',
   path: 'https://threejs.org/examples/models/gltf/LittlestTokyo.glb',
+  offset: 35,
   scale: .2
 });

@@ -9,15 +9,14 @@ export class Base {
   constructor(options) {
     console.log('Base', this);
     this.options = {...this.options, ...options};
-    this.clock = new THREE.Clock();
     this.renderer = this.setupRenderer(options.id);
-    this.camera = this.setupCamera();
+    this.camera = this.setupCamera(0, 0, 600);
     this.controls = this.setupControls(this.camera, this.renderer);
     this.scene = this.setupScene(this.camera);
-    this.interactions = this.setupInteractions(this.camera, this.controls, this.sphere);
+    this.interactions = this.setupInteractions(this.camera, this.controls);
     this.setupLights(this.scene, this.camera);
     this.setupResize(this.camera, this.renderer);
-    this.setupAnimate(this.controls, this.renderer, this.scene, this.camera, this.interactions, this.clock);
+    this.setupAnimate(this.controls, this.renderer, this.scene, this.camera, this.interactions);
   }
 
   setupRenderer(id) {
@@ -29,9 +28,9 @@ export class Base {
     return renderer;
   }
 
-  setupCamera() {
+  setupCamera(x, y, z) {
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
-    camera.position.set(0, 0, 600);
+    camera.position.set(x, y, z);
     return camera;
   }
 
@@ -68,7 +67,7 @@ export class Base {
     });
   }
 
-  setupInteractions(camera, controls, globe) {
+  setupInteractions(camera, controls) {
     const vector = new THREE.Vector2();
     let isDragging = false;
     document.addEventListener('mousedown', (event) => {
@@ -89,9 +88,9 @@ export class Base {
       event.preventDefault();
       if (this.intersected) {
         console.log('intersected', this.intersected);
-        zoomCameraWithTransition(camera, controls, this.intersected);
+        this.zoomCameraWithTransition(camera, controls, this.intersected);
       } else {
-        zoomCameraWithTransition(camera, controls, globe, 1.5);
+        this.zoomCameraWithTransition(camera, controls, this.scene, 1.5);
       }
     });
     return vector;
@@ -102,7 +101,7 @@ export class Base {
     const center = box.getCenter();
     const size = box.getSize();
     const maxSize = Math.max(size.x, size.y, size.z);
-    const fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
+    const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * camera.fov / 360));
     const fitWidthDistance = fitHeightDistance / camera.aspect;
     const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
     const cameraCoords = {
@@ -115,29 +114,10 @@ export class Base {
     const controlsAnim = new TWEEN.Tween(controls.target).to(center, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
   }
 
-  setupAnimate(controls, renderer, scene, camera, interactions, clock) {
-    const raycaster = new THREE.Raycaster();
-    const vectors = () => {
-      raycaster.setFromCamera(interactions, camera);
-      var intersects = raycaster.intersectObjects(scene.children, true);
-      if (intersects.length > 0) {
-        if (this.intersected != intersects[0].object) {
-          if (this.intersected && this.intersected.material.emissive) {
-            this.intersected.material.emissive.setHex(this.intersected.currentHex);
-          }
-          this.intersected = intersects[0].object;
-          if (this.intersected && this.intersected.material.emissive) {
-            this.intersected.currentHex = this.intersected.material.emissive.getHex();
-            this.intersected.material.emissive.setHex(0xff0000);
-          }
-        }
-      } else {
-        if (this.intersected && this.intersected.material.emissive) {
-          this.intersected.material.emissive.setHex(this.intersected.currentHex);
-        }
-        this.intersected = null;
-      }
-    };
+  setupAnimate(controls, renderer, scene, camera, interactions) {
+    const clock = new THREE.Clock();
+    this.raycaster = new THREE.Raycaster();
+    
     const animate = () => {
       TWEEN.update();
       requestAnimationFrame(animate);
@@ -146,10 +126,32 @@ export class Base {
         animation.update(delta);
       });
       controls.update(delta);
-      vectors();
+      this.updateVectors(scene, interactions, camera);
       renderer.render(scene, camera);
     };
     animate();
+  }
+
+  updateVectors(scene, interactions, camera) {
+    this.raycaster.setFromCamera(interactions, camera);
+    var intersects = this.raycaster.intersectObjects(scene.children, true);
+    if (intersects.length > 0) {
+      if (this.intersected != intersects[0].object) {
+        if (this.intersected && this.intersected.material.emissive) {
+          this.intersected.material.emissive.setHex(this.intersected.currentHex);
+        }
+        this.intersected = intersects[0].object;
+        if (this.intersected && this.intersected.material.emissive) {
+          this.intersected.currentHex = this.intersected.material.emissive.getHex();
+          this.intersected.material.emissive.setHex(0xff0000);
+        }
+      }
+    } else {
+      if (this.intersected && this.intersected.material.emissive) {
+        this.intersected.material.emissive.setHex(this.intersected.currentHex);
+      }
+      this.intersected = null;
+    }
   }
 
   addAnimation(model, gltf) {
