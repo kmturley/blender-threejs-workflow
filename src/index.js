@@ -8,6 +8,7 @@ const base = new Base({
 });
 
 const globe = new Globe(base, {
+  earth: './textures/earth.jpg',
   radius: 150,
   sky: './textures/space.jpg'
 });
