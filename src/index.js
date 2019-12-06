@@ -14,6 +14,7 @@ const globe = new Globe(base, {
 
 const monkey = new Model(base, globe, {
   path: './models/monkey.gltf',
+  selectable: true,
   scale: 30
 });
 
@@ -21,5 +22,6 @@ const house = new Model(base, globe, {
   decoder: 'https://threejs.org/examples/js/libs/draco/gltf/',
   path: 'https://threejs.org/examples/models/gltf/LittlestTokyo.glb',
   offset: 35,
+  selectable: true,
   scale: .2
 });

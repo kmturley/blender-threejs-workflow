@@ -6,6 +6,7 @@ export class Base {
   animations = [];
   intersected = null;
   options = {};
+  selectable = [];
   constructor(options) {
     console.log('Base', this);
     this.options = {...this.options, ...options};
@@ -146,7 +147,7 @@ export class Base {
 
   updateVectors(scene, interactions, camera) {
     this.raycaster.setFromCamera(interactions, camera);
-    var intersects = this.raycaster.intersectObjects(scene.children, true);
+    var intersects = this.raycaster.intersectObjects(this.selectable, true);
     if (intersects.length > 0) {
       if (this.intersected != intersects[0].object) {
         if (this.intersected && this.intersected.material.emissive) {
@@ -171,5 +172,13 @@ export class Base {
     mixer.clipAction(gltf.animations[0]).play();
     this.animations.push(mixer);
     return mixer;
+  }
+
+  addSelectable(model) {
+    model.children.forEach((child) => {
+      if (child.type === 'Mesh' || child.type === 'Object3D') {
+        this.selectable.push(child);
+      }
+    });
   }
 }
