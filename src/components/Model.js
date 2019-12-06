@@ -13,13 +13,13 @@ export class Model {
       dracoLoader.setDecoderPath(options.decoder);
       this.loader.setDRACOLoader(dracoLoader);
     }
-    this.load(base, globe, options.path, options.scale, options.offset, options.selectable);
+    this.load(base, globe, options.path, options.scale, options.name, options.offset, options.selectable);
   }
 
-  load(base, globe, path, scale, offset = 0, selectable = false) {
+  load(base, globe, path, scale, name, offset = 0, selectable = false) {
     this.loader.load(path, (gltf) => {
       gltf.scene.scale.set(scale, scale, scale);
-      globe.addModel(gltf.scene, offset);
+      globe.addModel(gltf.scene, name, offset);
       if (selectable) {
         base.addSelectable(gltf.scene);
       }
