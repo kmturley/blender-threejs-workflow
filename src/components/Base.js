@@ -1,29 +1,43 @@
 import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js';
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
 
 export class Base {
   animations = [];
   intersected = null;
   options = {};
+  selectable = [];
   constructor(options) {
     console.log('Base', this);
     this.options = {...this.options, ...options};
-    this.renderer = this.setupRenderer(options.id);
+    this.renderer2d = this.setupRenderer2d(options.id);
+    this.renderer3d = this.setupRenderer3d(options.id);
     this.camera = this.setupCamera(0, 0, 600);
-    this.controls = this.setupControls(this.camera, this.renderer);
+    this.controls = this.setupControls(this.camera, this.renderer2d);
     this.scene = this.setupScene(this.camera);
     this.interactions = this.setupInteractions(this.camera, this.controls);
     this.setupLights(this.scene, this.camera);
-    this.setupResize(this.camera, this.renderer);
-    this.setupAnimate(this.controls, this.renderer, this.scene, this.camera, this.interactions);
+    this.setupResize(this.camera, this.renderer3d);
+    this.setupAnimate(this.controls, this.renderer3d, this.renderer2d, this.scene, this.camera, this.interactions);
   }
 
-  setupRenderer(id) {
+  setupRenderer3d(id) {
     const el = document.getElementById(id);
     const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.className = 'scene3d';
+    el.appendChild(renderer.domElement);
+    return renderer;
+  }
+
+  setupRenderer2d(id) {
+    const el = document.getElementById(id);
+    const renderer = new CSS2DRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.className = 'scene2d';
     el.appendChild(renderer.domElement);
     return renderer;
   }
@@ -126,7 +140,7 @@ export class Base {
     const controlsAnim = new TWEEN.Tween(controls.target).to(center, 1000).easing(TWEEN.Easing.Quadratic.InOut).start();
   }
 
-  setupAnimate(controls, renderer, scene, camera, interactions) {
+  setupAnimate(controls, renderer, renderer2D, scene, camera, interactions) {
     const clock = new THREE.Clock();
     this.raycaster = new THREE.Raycaster();
     
@@ -140,13 +154,14 @@ export class Base {
       controls.update(delta);
       this.updateVectors(scene, interactions, camera);
       renderer.render(scene, camera);
+      renderer2D.render(scene, camera);
     };
     animate();
   }
 
   updateVectors(scene, interactions, camera) {
     this.raycaster.setFromCamera(interactions, camera);
-    var intersects = this.raycaster.intersectObjects(scene.children, true);
+    var intersects = this.raycaster.intersectObjects(this.selectable, true);
     if (intersects.length > 0) {
       if (this.intersected != intersects[0].object) {
         if (this.intersected && this.intersected.material.emissive) {
@@ -171,5 +186,13 @@ export class Base {
     mixer.clipAction(gltf.animations[0]).play();
     this.animations.push(mixer);
     return mixer;
+  }
+
+  addSelectable(model) {
+    model.children.forEach((child) => {
+      if (child.type === 'Mesh' || child.type === 'Object3D') {
+        this.selectable.push(child);
+      }
+    });
   }
 }
