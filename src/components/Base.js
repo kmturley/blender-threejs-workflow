@@ -19,7 +19,7 @@ export class Base {
     this.scene = this.setupScene(this.camera);
     this.interactions = this.setupInteractions(this.camera, this.controls);
     this.setupLights(this.scene, this.camera);
-    this.setupResize(this.camera, this.renderer3d);
+    this.setupResize(this.camera, this.renderer2d, this.renderer3d);
     this.setupAnimate(this.controls, this.renderer3d, this.renderer2d, this.scene, this.camera, this.interactions);
   }
 
@@ -73,11 +73,12 @@ export class Base {
     return scene;
   }
 
-  setupResize(camera, renderer) {
+  setupResize(camera, renderer2d, renderer3d) {
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer2d.setSize(window.innerWidth, window.innerHeight);
+      renderer3d.setSize(window.innerWidth, window.innerHeight);
     });
   }
 
