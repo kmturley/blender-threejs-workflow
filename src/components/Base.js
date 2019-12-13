@@ -15,7 +15,7 @@ export class Base {
     this.renderer2d = this.setupRenderer2d(options.id);
     this.renderer3d = this.setupRenderer3d(options.id);
     this.camera = this.setupCamera(0, 0, 600);
-    this.controls = this.setupControls(this.camera, this.renderer2d);
+    this.controls = this.setupControls(this.camera, this.renderer3d);
     this.scene = this.setupScene(this.camera);
     this.interactions = this.setupInteractions(this.camera, this.controls);
     this.setupLights(this.scene, this.camera);

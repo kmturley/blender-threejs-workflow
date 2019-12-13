@@ -4,7 +4,7 @@ import { Globe } from './components/Globe';
 import { Model } from './components/Model';
 
 const base = new Base({
-  id: 'scene'
+  id: 'globe'
 });
 
 const globe = new Globe(base, {
