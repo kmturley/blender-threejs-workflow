@@ -18,6 +18,7 @@ export class Model {
 
   load(base, parent, path, scale, name, offset = 0, selectable = false) {
     this.loader.load(path, (gltf) => {
+      console.log('gltf', gltf);
       gltf.scene.scale.set(scale, scale, scale);
       parent.addModel(gltf.scene, name, offset);
       if (selectable && base.addSelectable) {
@@ -26,6 +27,9 @@ export class Model {
       if (gltf.animations && base.addAnimation) {
         base.addAnimation(gltf.scene, gltf);
       }
+      // if (gltf.cameras) {
+      //   base.addCamera(gltf.cameras[0]);
+      // }
     });
   }
 }
