@@ -203,9 +203,6 @@ const scene = new THREE.Scene();
 let camera;
 let model;
 let animations = [];
-// var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 15000);
-// camera.position.set(0, 0, 4000);
-// camera.rotation.set(-3, -1, -3);
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -214,35 +211,44 @@ renderer.domElement.className = 'scene3d';
 document.getElementById('place').appendChild(renderer.domElement);
 
 var loader = new GLTFLoader();
-loader.load('./models/v4/GFG_scene_castle.gltf', (gltf) => {
-  console.log('add', gltf);
-  // gltf.scene.scale.set(.1, .1, .1);
-  loadElements(gltf);
-});
-
-function loadElements(file) {
+loader.load('./models/v4/GFG_scene_castle.gltf', (file) => {
   if (file.scene) {
     model = file.scene;
     console.log('model', model);
     scene.add(model);
   }
   if (file.animations) {
-    let mixer = new THREE.AnimationMixer(file.scene);
-    mixer.clipAction(file.animations[0]).play();
-    animations.push(mixer);
+    let animation = new THREE.AnimationMixer(file.scene);
+    animation.clipAction(file.animations[0]).play();
+    console.log('animation', animation);
+    animations.push(animation);
   }
   if (file.cameras) {
     camera = file.cameras[0];
     console.log('camera', camera);
     scene.add(camera);
   }
-  const ambient = new THREE.AmbientLight(0x404040);
-  scene.add(ambient);
-
-  const point = new THREE.PointLight(0xffffff, 1);
-  point.position.copy(camera.position);
-  scene.add(point);
-}
+  if (file.scene.children) {
+    file.scene.children.forEach((child) => {
+      let light;
+      if (child.name.toLowerCase().includes('sun')) {
+        light = new THREE.AmbientLight(0x555555);
+      } else if (child.name.toLowerCase().includes('directional')) {
+        light = new THREE.DirectionalLight(0xffffff, 1);
+      } else if (child.name.toLowerCase().includes('point')) {
+        light = new THREE.PointLight(0xffffff, 1, 100);
+      }
+      if (light) {
+        console.log('light', light);
+        light.position.copy(child.position);
+        light.rotation.copy(child.rotation);
+        light.scale.copy(child.scale);
+        light.quaternion.copy(child.quaternion);
+        scene.add(light);
+      }
+    });
+  }
+});
 
 function animate() {
   requestAnimationFrame(animate);
