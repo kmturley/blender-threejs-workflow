@@ -6,12 +6,20 @@ body {
 .nav {
   color: #fff;
   padding: 2rem;
-  position: absolute;
-  z-index: 2;
+  pointer-events: none;
 
   h1 {
     font-weight: normal;
     margin: 0;
+  }
+
+  .nav-inner {
+    flex-direction: column;
+    justify-content: center;
+    display: flex;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
   }
 }
 
@@ -19,6 +27,10 @@ body {
 .scene canvas {
   height: 100%;
   width: 100%;
+}
+
+canvas {
+  display: block;
 }
 
 .scene2d {
@@ -29,4 +41,11 @@ body {
   .label {
     color: #fff;
   }
+}
+
+.section {
+  box-sizing: border-box;
+  padding: 0 1rem;
+  margin: auto;
+  max-width: 1024px;
 }

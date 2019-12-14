@@ -6,7 +6,8 @@ const OUTPUT_FOLDER = 'dist';
 
 module.exports = {
   entry: {
-    app: './src/index.js',
+    globe: './src/globe.js',
+    place: './src/place.js',
   },
   output: {
     filename: '[name].bundle.js',
@@ -15,9 +16,9 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new CopyPlugin([
-      { from: './src/index.html' },
-      { from: './src/models', to: './models' },
-      { from: './src/textures', to: './textures' },
+      { context: './src', from: '*.html', to: './' },
+      { context: './src', from: './models', to: './models' },
+      { context: './src', from: './textures', to: './textures' },
     ]),
   ],
   devServer: {

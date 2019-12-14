@@ -9,6 +9,7 @@ export class Base {
   intersected = null;
   options = {};
   selectable = [];
+  previousWidth = 0;
   constructor(options) {
     console.log('Base', this);
     this.options = {...this.options, ...options};
@@ -74,11 +75,14 @@ export class Base {
   }
 
   setupResize(camera, renderer2d, renderer3d) {
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer2d.setSize(window.innerWidth, window.innerHeight);
-      renderer3d.setSize(window.innerWidth, window.innerHeight);
+    this.addEvents(window, ['resize', 'rotate'], () => {
+      if (window.innerWidth !== this.previousWidth) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer2d.setSize(window.innerWidth, window.innerHeight);
+        renderer3d.setSize(window.innerWidth, window.innerHeight);
+        this.previousWidth = window.innerWidth;
+      }
     });
   }
 
