@@ -1,6 +1,5 @@
 import { Scene } from './Scene';
 import * as THREE from 'three';
-import TWEEN from '@tweenjs/tween.js';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 export class Globe extends Scene {
@@ -18,8 +17,17 @@ export class Globe extends Scene {
   }
 
   constructor(options) {
+    options = options || {};
+    options.controls = {
+      autoRotate: true,
+      enableDamping: true,
+      maxDistance: 1000,
+      minDistance: 200,
+      type: 'OrbitControls',
+      zoomSpeed: .2,
+    };
     super(options);
-    console.log('Example', this);
+    console.log('Example', this.options);
 
     this.interactions = this.setupInteractions(this.camera, this.controls);
     this.onAnimate = (camera) => {

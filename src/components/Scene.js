@@ -13,17 +13,16 @@ export class Scene {
       fov: 45,
       near: 1, 
       far: 10000,
-      x: 0,
-      y: 0,
-      z: 600
-    },
-    controls: {
-      autoRotate: true,
-      enableDamping: true,
-      maxDistance: 1000,
-      minDistance: 200,
-      type: 'OrbitControls',
-      zoomSpeed: .2,
+      position: {
+        x: 0,
+        y: 0,
+        z: 600
+      },
+      rotation: {
+        x: 0,
+        y: 0,
+        z: 0
+      }
     },
     loader: {
       decoder: 'https://threejs.org/examples/js/libs/draco/gltf/',
@@ -39,7 +38,9 @@ export class Scene {
     this.renderer2d = this.setupRenderer2d(this.options.renderer);
     this.renderer3d = this.setupRenderer3d(this.options.renderer);
     this.camera = this.setupCamera(this.options.camera);
-    this.controls = this.setupControls(this.options.controls, this.camera, this.renderer2d);
+    if (this.options.controls) {
+      this.controls = this.setupControls(this.options.controls, this.camera, this.renderer2d);
+    }
     this.scene = this.setupScene(this.camera);
     this.loader = this.setupLoader(this.options.loader);
     this.setupLights(this.scene, this.camera);
@@ -70,7 +71,8 @@ export class Scene {
 
   setupCamera(options) {
     const camera = new THREE.PerspectiveCamera(options.fov, window.innerWidth / window.innerHeight, options.near, options.far);
-    camera.position.set(options.x, options.y, options.z);
+    camera.position.set(options.position.x, options.position.y, options.position.z);
+    camera.rotation.set(options.rotation.x, options.rotation.y, options.rotation.z);
     return camera;
   }
 
@@ -122,7 +124,9 @@ export class Scene {
       this.animations.forEach((animation) => {
         animation.update(delta);
       });
-      controls.update(delta);
+      if (controls) {
+        controls.update(delta);
+      }
       if (this.onAnimate) {
         this.onAnimate(camera);
       }
@@ -164,7 +168,7 @@ export class Scene {
         this.addAnimation(gltf.scene, gltf);
       }
       // if (gltf.cameras) {
-      //   base.addCamera(gltf.cameras[0]);
+      //   this.scene.addCamera(gltf.cameras[0]);
       // }
       if (callback) {
         callback(gltf.scene);
@@ -174,8 +178,14 @@ export class Scene {
     });
   }
 
-  zoomTo(cameraPos, controlsPos, duration) {
-    const cameraAnim = new TWEEN.Tween(this.camera.position).to(cameraPos, duration).easing(TWEEN.Easing.Quadratic.InOut).start();
-    const controlsAnim = new TWEEN.Tween(this.controls.target).to(controlsPos, duration).easing(TWEEN.Easing.Quadratic.InOut).start();
+  zoomTo(cameraPos, controlsPos, duration, callback) {
+    const cameraAnim = new TWEEN.Tween(this.camera.position).to(cameraPos, duration).easing(TWEEN.Easing.Quadratic.InOut).start().onComplete(() => {
+      if (callback) {
+        callback();
+      }
+    });
+    if (this.controls) {
+      const controlsAnim = new TWEEN.Tween(this.controls.target).to(controlsPos, duration).easing(TWEEN.Easing.Quadratic.InOut).start();
+    }
   }
 }
