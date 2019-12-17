@@ -7,7 +7,7 @@ const OUTPUT_FOLDER = 'dist';
 module.exports = {
   entry: {
     globe: './src/globe.js',
-    place: './src/place.js',
+    parallax: './src/parallax.js',
   },
   output: {
     filename: '[name].bundle.js',
