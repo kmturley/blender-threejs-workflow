@@ -113,8 +113,9 @@ export class Globe extends Scene {
   }
 
   addGlobeLabel(model, stick, text) {
-    const el = document.createElement('div');
+    const el = document.createElement('a');
     el.className = 'label';
+    el.setAttribute('href', '/parallax.html');
     el.textContent = text;
     const obj = new CSS2DObject(el);
     obj.position.set(model.position.x, model.position.y + 60, model.position.z);
