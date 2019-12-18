@@ -4,7 +4,8 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 export class Globe extends Scene {
   intersected = null;
-  selectable = [];
+  labels = [];
+  highlights = [];
   options = {
     id: 'scene',
     earth: {
@@ -31,16 +32,17 @@ export class Globe extends Scene {
 
     this.interactions = this.setupInteractions(this.camera, this.controls);
     this.onAnimate = (camera) => {
-      this.updateVectors(camera);
+      this.updateHighlights(camera);
+      this.updateLabels(camera);
     };
     this.setupSky(this.scene, this.options.sky);
     this.setupEarth(this.scene, this.options.earth);
     this.addModel('./models/monkey.gltf', 30, (model) => {
-      this.addSelectable(model);
+      this.addHighlight(model);
       this.addGlobeModel(model, 'Monkey', this.options.earth);
     });
     this.addModel('https://threejs.org/examples/models/gltf/LittlestTokyo.glb', .2, (model) => {
-      this.addSelectable(model);
+      this.addHighlight(model);
       this.addGlobeModel(model, 'House', this.options.earth, 35);
     });
   }
@@ -104,35 +106,72 @@ export class Globe extends Scene {
   }
 
   addGlobeModel(model, text, options, offset = 0) {
+    console.log('addGlobeModel', model);
     const stick = new THREE.Object3D();
     model.position.set(0, options.radius + offset, 0);
     stick.add(model);
-    this.addGlobeLabel(model, stick, text);
+    const box = new THREE.Box3().setFromObject(model);
+    const el = this.addGlobeLabel(text);
+    const obj = new CSS2DObject(el);
+    obj.position.set(model.position.x, model.position.y + (box.getSize().y - offset + 10), model.position.z);
+    this.labels.push(obj);
+    stick.add(obj);
     stick.rotation.set(this.randomRotation(), this.randomRotation(), this.randomRotation());
     this.scene.add(stick);
   }
 
-  addGlobeLabel(model, stick, text) {
+  addGlobeLabel(text) {
     const el = document.createElement('a');
     el.className = 'label';
-    el.setAttribute('href', '/parallax.html');
-    el.textContent = text;
-    const obj = new CSS2DObject(el);
-    obj.position.set(model.position.x, model.position.y + 60, model.position.z);
-    stick.add(obj);
+    el.setAttribute('href', 'parallax.html');
+    el.textContent = text + ' >';
+    return el;
   }
 
-  addSelectable(model) {
-    model.children.forEach((child) => {
-      if (child.type === 'Mesh' || child.type === 'Object3D') {
-        this.selectable.push(child);
+  addHighlight(model) {
+    this.highlights.push(model);
+  }
+
+  updateLabels() {
+    this.labels.forEach((label) => {
+      let className = 'label';
+      const position = this.toScreenPosition(label);
+      if (position.left) {
+        className += ' label-left';
+      } else {
+        className += ' label-right';
+      }
+      if (position.top) {
+        className += ' label-top';
+      } else {
+        className += ' label-bottom';
+      }
+      if (label.element.className !== className) {
+        label.element.className = className;
       }
     });
   }
 
-  updateVectors(camera) {
+  toScreenPosition(obj) {
+    const vector = new THREE.Vector3();
+    const widthHalf = 0.5 * this.renderer3d.getContext().canvas.width;
+    const heightHalf = 0.5 * this.renderer3d.getContext().canvas.height;
+    obj.updateMatrixWorld();
+    vector.setFromMatrixPosition(obj.matrixWorld);
+    vector.project(this.camera);
+    vector.x = (vector.x * widthHalf) + widthHalf;
+    vector.y = - (vector.y * heightHalf) + heightHalf;
+    return { 
+      x: vector.x,
+      y: vector.y,
+      left: vector.x > widthHalf,
+      top: vector.y > heightHalf
+    };
+  }
+
+  updateHighlights(camera) {
     this.raycaster.setFromCamera(this.interactions, camera);
-    var intersects = this.raycaster.intersectObjects(this.selectable, true);
+    var intersects = this.raycaster.intersectObjects(this.highlights, true);
     if (intersects.length > 0) {
       if (this.intersected != intersects[0].object) {
         if (this.intersected && this.intersected.material.emissive) {
