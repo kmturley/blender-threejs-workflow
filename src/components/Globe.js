@@ -74,9 +74,11 @@ export class Globe extends Scene {
       event.preventDefault();
       if (this.intersected) {
         console.log('intersected', this.intersected);
-        this.zoomCameraWithTransition(camera, controls, this.intersected);
+        controls.enabled = false;
+        this.zoomCamera(camera, this.intersected);
       } else {
-        this.zoomCameraWithTransition(camera, controls, this.scene, 1.5);
+        controls.enabled = true;
+        this.zoomCamera(camera, this.scene, 1.5);
       }
     });
     return vector;
@@ -174,11 +176,11 @@ export class Globe extends Scene {
     var intersects = this.raycaster.intersectObjects(this.highlights, true);
     if (intersects.length > 0) {
       if (this.intersected != intersects[0].object) {
-        if (this.intersected && this.intersected.material.emissive) {
+        if (this.controls.enabled && this.intersected && this.intersected.material.emissive) {
           this.intersected.material.emissive.setHex(this.intersected.currentHex);
         }
         this.intersected = intersects[0].object;
-        if (this.intersected && this.intersected.material.emissive) {
+        if (this.controls.enabled && this.intersected && this.intersected.material.emissive) {
           this.intersected.currentHex = this.intersected.material.emissive.getHex();
           this.intersected.material.emissive.setHex(0xff0000);
         }
@@ -191,7 +193,7 @@ export class Globe extends Scene {
     }
   }
 
-  zoomCameraWithTransition(camera, controls, model, fitOffset = 1.2) {
+  zoomCamera(camera, model, fitOffset = 1.2) {
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter();
     const size = box.getSize();
@@ -201,10 +203,10 @@ export class Globe extends Scene {
     const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
     const cameraCoords = {
       x: center.x,
-      y : center.y,
-      z : center.z + distance
+      y: center.y,
+      z: center.z + distance
     };
-    console.log('zoomCameraWithTransition', center, cameraCoords);
+    console.log('zoomCamera', center, cameraCoords);
     this.zoomTo(cameraCoords, center, 1000);
   }
 }
