@@ -6,48 +6,34 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 export class Parallax extends Scene {
 
   constructor(options) {
-    options = options || {};
-    options.camera = {
-      fov: 45,
-      near: 1,
-      far: 15000,
-      position: {
-        x: -10205,
-        y: 2000,
-        z: -4071
-      },
-      positionEnd: {
-        y: 600
-      },
-      rotation: {
-        x: -3,
-        y: -1,
-        z: -3
-      }
-    };
     super(options);
     console.log('Parallax', this);
 
     this.interactions = this.setupInteractions(this.camera, this.controls);
-    this.addModel('./models/castle.gltf', 1);
+    this.addModel(options.model.path, options.model.scale);
 
-    this.animating = true;
-    window.setTimeout(() => {
-      const cameraCoords = {
-        x: this.camera.position.x,
-        y : this.options.camera.positionEnd.y,
-        z : this.camera.position.z
-      };
-      this.cameraZoom(cameraCoords, null, 3000, () => {
-        this.animating = false;
-      });
-    }, 1000);
+    if (this.options.camera.positionEnd && this.options.camera.positionEnd.y !== this.options.camera.position.y) {
+      this.animating = true;
+      window.setTimeout(() => {
+        const cameraCoords = {
+          x: this.camera.position.x,
+          y : this.options.camera.positionEnd.y,
+          z : this.camera.position.z
+        };
+        this.cameraZoom(cameraCoords, null, 3000, () => {
+          this.animating = false;
+        });
+      }, 1000);
+    } else {
+      this.animating = false;
+    }
   }
 
   setupInteractions(camera) {
+    const startY = this.options.camera.positionEnd ? this.options.camera.positionEnd.y : this.options.camera.position.y;
     document.addEventListener('scroll', (e) => {
       if (this.animating === false) {
-        camera.position.y = this.options.camera.positionEnd.y - (window.scrollY / 2);
+        camera.position.y = startY - (window.scrollY / this.options.ratio);
       }
     }, {passive: false});
   }

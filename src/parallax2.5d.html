@@ -28,13 +28,14 @@
     }
 
     .parallax .overlay {
+      color: #fff;
       display: flex;
       flex-direction: column;
       height: 100%;
       justify-content: center;
       position: absolute;
       width: 100%;
-      z-index: 2;
+      z-index: 3;
     }
 
     .parallax .layer {
@@ -53,6 +54,11 @@
       position: relative;
       z-index: 2;
     }
+
+    .scene {
+      position: absolute;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
@@ -60,9 +66,10 @@
     <div class="overlay">
       <div class="section">
         <h1>Parallax example</h1>
-        <p>Multiple layers of images</p>
+        <p>Mixed layers of images and 3D</p>
       </div>
     </div>
+    <div class="scene" id="scene"></div>
     <div class="layer layer-1" data-type="parallax" data-depth="0.10"></div>
     <div class="layer layer-2" data-type="parallax" data-depth="0.15"></div>
     <div class="layer layer-3" data-type="parallax" data-depth="0.30"></div>
@@ -111,5 +118,6 @@
       });
     });
   </script>
+  <script src="parallax25d.bundle.js"></script>
 </body>
 </html>

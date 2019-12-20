@@ -53,7 +53,7 @@ export class Scene {
   }
 
   setupRenderer2d(options) {
-    const renderer = new CSS2DRenderer({antialias: options.antialias});
+    const renderer = new CSS2DRenderer({alpha: true, antialias: options.antialias});
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.className = 'scene2d';
     this.getEl().appendChild(renderer.domElement);
@@ -61,7 +61,7 @@ export class Scene {
   }
 
   setupRenderer3d(options) {
-    const renderer = new THREE.WebGLRenderer({antialias: options.antialias});
+    const renderer = new THREE.WebGLRenderer({alpha: true, antialias: options.antialias});
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.className = 'scene3d';
@@ -164,7 +164,7 @@ export class Scene {
     this.loader.load(path, (gltf) => {
       console.log('addModel.load', gltf);
       gltf.scene.scale.set(scale, scale, scale);
-      if (gltf.animations) {
+      if (gltf.animations.length) {
         this.addAnimation(gltf.scene, gltf);
       }
       // if (gltf.cameras) {

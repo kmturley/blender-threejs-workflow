@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     globe: './src/globe.js',
     parallax: './src/parallax.js',
+    parallax25d: './src/parallax2.5d.js',
   },
   output: {
     filename: '[name].bundle.js',

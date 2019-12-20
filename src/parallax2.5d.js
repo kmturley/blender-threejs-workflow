@@ -8,22 +8,19 @@ const parallax = new Parallax({
     near: 1,
     far: 15000,
     position: {
-      x: -10205,
-      y: 1000,
-      z: -4071
-    },
-    positionEnd: {
-      y: 600
+      x: 0,
+      y: 80,
+      z: 200
     },
     rotation: {
-      x: -3,
-      y: -1,
-      z: -3
+      x: 0,
+      y: 0,
+      z: 0
     }
   },
   model: {
-    path: './models/castle.gltf',
-    scale: 1
+    path: './models/terrain.gltf',
+    scale: 20
   },
-  ratio: 2
+  ratio: 15
 });
