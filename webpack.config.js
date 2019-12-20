@@ -17,6 +17,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new CopyPlugin([
       { context: './src', from: '*.html', to: './' },
+      { context: './src', from: './images', to: './images' },
       { context: './src', from: './models', to: './models' },
       { context: './src', from: './textures', to: './textures' },
     ]),
