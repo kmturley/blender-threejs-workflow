@@ -33,7 +33,14 @@ export class Parallax extends Scene {
 
     this.animating = true;
     window.setTimeout(() => {
-      this.zoomCameraWithTransition(this.camera, this.options.camera.positionEnd.y, 3000);
+      const cameraCoords = {
+        x: this.camera.position.x,
+        y : this.options.camera.positionEnd.y,
+        z : this.camera.position.z
+      };
+      this.cameraZoom(cameraCoords, null, 3000, () => {
+        this.animating = false;
+      });
     }, 1000);
   }
 
@@ -43,16 +50,5 @@ export class Parallax extends Scene {
         camera.position.y = this.options.camera.positionEnd.y - (window.scrollY / 2);
       }
     }, {passive: false});
-  }
-
-  zoomCameraWithTransition(camera, yPos, speed) {
-    const cameraCoords = {
-      x: camera.position.x,
-      y : yPos,
-      z : camera.position.z
-    };
-    this.zoomTo(cameraCoords, null, speed, () => {
-      this.animating = false;
-    });
   }
 }

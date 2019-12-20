@@ -178,7 +178,7 @@ export class Scene {
     });
   }
 
-  zoomTo(cameraPos, controlsPos, duration, callback) {
+  cameraZoom(cameraPos, controlsPos, duration, callback) {
     const cameraAnim = new TWEEN.Tween(this.camera.position).to(cameraPos, duration).easing(TWEEN.Easing.Quadratic.InOut).start().onComplete(() => {
       if (callback) {
         callback();
@@ -187,5 +187,10 @@ export class Scene {
     if (this.controls) {
       const controlsAnim = new TWEEN.Tween(this.controls.target).to(controlsPos, duration).easing(TWEEN.Easing.Quadratic.InOut).start();
     }
+  }
+
+  cameraReset() {
+    console.log(this.options);
+    this.cameraZoom(this.options.camera.position, {x: 0, y: 0, z: 0}, 1000);
   }
 }

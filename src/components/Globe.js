@@ -6,26 +6,25 @@ export class Globe extends Scene {
   intersected = null;
   labels = [];
   highlights = [];
-  options = {
-    id: 'scene',
-    earth: {
-      heightSegments: 20,
-      radius: 150,
-      texture: './textures/earth.jpg',
-      widthSegments: 20
-    },
-    sky: './textures/space.jpg'
-  }
 
   constructor(options) {
-    options = options || {};
-    options.controls = {
-      autoRotate: true,
-      enableDamping: true,
-      maxDistance: 1000,
-      minDistance: 200,
-      type: 'OrbitControls',
-      zoomSpeed: .2,
+    options = {
+      id: 'scene',
+      controls: {
+        autoRotate: true,
+        enableDamping: true,
+        maxDistance: 1000,
+        minDistance: 200,
+        type: 'OrbitControls',
+        zoomSpeed: .2,
+      },
+      earth: {
+        heightSegments: 20,
+        radius: 150,
+        texture: './textures/earth.jpg',
+        widthSegments: 20
+      },
+      sky: './textures/space.jpg'
     };
     super(options);
     console.log('Example', this.options);
@@ -75,10 +74,10 @@ export class Globe extends Scene {
       if (this.intersected) {
         console.log('intersected', this.intersected);
         controls.enabled = false;
-        this.zoomCamera(camera, this.intersected);
+        this.cameraMove(camera, this.intersected);
       } else {
         controls.enabled = true;
-        this.zoomCamera(camera, this.scene, 1.5);
+        this.cameraReset();
       }
     });
     return vector;
@@ -193,7 +192,7 @@ export class Globe extends Scene {
     }
   }
 
-  zoomCamera(camera, model, fitOffset = 1.2) {
+  cameraMove(camera, model, fitOffset = 1.2) {
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter();
     const size = box.getSize();
@@ -206,7 +205,7 @@ export class Globe extends Scene {
       y: center.y,
       z: center.z + distance
     };
-    console.log('zoomCamera', center, cameraCoords);
-    this.zoomTo(cameraCoords, center, 1000);
+    console.log('cameraMove', center, cameraCoords);
+    this.cameraZoom(cameraCoords, center, 1000);
   }
 }
