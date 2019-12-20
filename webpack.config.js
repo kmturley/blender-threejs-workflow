@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     globe: './src/globe.js',
     parallax: './src/parallax.js',
+    parallax25d: './src/parallax2.5d.js',
   },
   output: {
     filename: '[name].bundle.js',
@@ -17,6 +18,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new CopyPlugin([
       { context: './src', from: '*.html', to: './' },
+      { context: './src', from: './images', to: './images' },
       { context: './src', from: './models', to: './models' },
       { context: './src', from: './textures', to: './textures' },
     ]),

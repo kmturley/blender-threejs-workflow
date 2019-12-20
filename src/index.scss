@@ -39,7 +39,46 @@ canvas {
   z-index: 1;
 
   .label {
-    color: #fff;
+    background-color: #fff;
+    border-radius: .25rem;
+    color: #0099ff;
+    padding: .75rem 1rem;
+    text-decoration: none;
+
+    &-hide {
+      display: none;
+    }
+
+    &::before {
+      content: '';
+      height: 0;
+      position: absolute;
+      width: 0;
+    }
+
+    &-left::before {
+      left: 1rem;
+    }
+
+    &-right::before {
+      right: 1rem;
+    }
+
+    &-top::before,
+    &-bottom::before {
+      border-left: 1rem solid transparent;
+      border-right: 1rem solid transparent;
+    }
+
+    &-top::before {
+      border-bottom: 1rem solid #fff;
+      top: -.95rem;
+    }
+
+    &-bottom::before {
+      border-top: 1rem solid #fff;
+      bottom: -.95rem;
+    }
   }
 }
 

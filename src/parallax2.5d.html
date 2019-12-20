@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Parallax example</title>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+    }
+
+    p {
+      margin: 0 0 1rem;
+    }
+
+    .section {
+      box-sizing: border-box;
+      margin: 0 auto;
+      max-width: 1024px;
+      padding: 1rem;
+      width: 100%;
+    }
+
+    .parallax {
+      height: 62vw;
+      position: relative;
+    }
+
+    .parallax .overlay {
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+      position: absolute;
+      width: 100%;
+      z-index: 3;
+    }
+
+    .parallax .layer {
+      background-size: 100% auto;
+      height: 100%;
+      position: fixed;
+      width: 100%;
+    }
+
+    .parallax .layer-1 { background-image: url('./images/sky.png'); }
+    .parallax .layer-2 { background-image: url('./images/mountains.png'); }
+    .parallax .layer-3 { background-image: url('./images/trees.png'); }
+
+    .content {
+      background-color: #fff;
+      position: relative;
+      z-index: 2;
+    }
+
+    .scene {
+      position: absolute;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax">
+    <div class="overlay">
+      <div class="section">
+        <h1>Parallax example</h1>
+        <p>Mixed layers of images and 3D</p>
+      </div>
+    </div>
+    <div class="scene" id="scene"></div>
+    <div class="layer layer-1" data-type="parallax" data-depth="0.10"></div>
+    <div class="layer layer-2" data-type="parallax" data-depth="0.15"></div>
+    <div class="layer layer-3" data-type="parallax" data-depth="0.30"></div>
+  </div>
+  <div class="content">
+    <div class="section">
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent tincidunt erat a odio aliquet, mattis consectetur metus consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+      <p>In bibendum justo quis nisl molestie, ut dapibus libero tristique. Integer rutrum, sem eu rutrum hendrerit, turpis urna ultrices nisl, sit amet blandit ante purus eget nisl. Vestibulum interdum maximus elit sed cursus.</p>
+      <p>Maecenas at hendrerit sapien. Donec velit dolor, dictum in molestie ut, fringilla in tortor. Nulla dui mi, suscipit et massa id, egestas luctus orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+      <p>Integer risus justo, luctus sed tempus at, gravida sed nunc. Pellentesque sagittis commodo ante. Phasellus vestibulum risus vitae mattis gravida. Nam vitae mi efficitur, venenatis tortor eget, tempus justo. Aliquam nec consequat elit. Curabitur ac sodales sem, nec consequat orci. Aliquam at velit mauris.</p>
+      <p>Nullam sit amet tortor vel orci vestibulum egestas. Proin quis nulla et metus lobortis tincidunt. Maecenas dapibus tincidunt quam sed efficitur. Mauris sed feugiat odio, congue rutrum elit. Aenean varius est a porttitor cursus. Donec ac aliquam libero. Donec sit amet sapien et tortor euismod tincidunt.</p>
+      <p>Cras non iaculis nisi, eget euismod nunc. Morbi sollicitudin risus ac velit sollicitudin, a tincidunt nunc consequat. Aenean feugiat gravida lacus, sit amet posuere turpis vehicula eu. Maecenas sollicitudin velit at turpis aliquam, id aliquam ante luctus.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent tincidunt erat a odio aliquet, mattis consectetur metus consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+      <p>In bibendum justo quis nisl molestie, ut dapibus libero tristique. Integer rutrum, sem eu rutrum hendrerit, turpis urna ultrices nisl, sit amet blandit ante purus eget nisl. Vestibulum interdum maximus elit sed cursus.</p>
+      <p>Maecenas at hendrerit sapien. Donec velit dolor, dictum in molestie ut, fringilla in tortor. Nulla dui mi, suscipit et massa id, egestas luctus orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+      <p>Integer risus justo, luctus sed tempus at, gravida sed nunc. Pellentesque sagittis commodo ante. Phasellus vestibulum risus vitae mattis gravida. Nam vitae mi efficitur, venenatis tortor eget, tempus justo. Aliquam nec consequat elit. Curabitur ac sodales sem, nec consequat orci. Aliquam at velit mauris.</p>
+      <p>Nullam sit amet tortor vel orci vestibulum egestas. Proin quis nulla et metus lobortis tincidunt. Maecenas dapibus tincidunt quam sed efficitur. Mauris sed feugiat odio, congue rutrum elit. Aenean varius est a porttitor cursus. Donec ac aliquam libero. Donec sit amet sapien et tortor euismod tincidunt.</p>
+      <p>Cras non iaculis nisi, eget euismod nunc. Morbi sollicitudin risus ac velit sollicitudin, a tincidunt nunc consequat. Aenean feugiat gravida lacus, sit amet posuere turpis vehicula eu. Maecenas sollicitudin velit at turpis aliquam, id aliquam ante luctus.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent tincidunt erat a odio aliquet, mattis consectetur metus consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+      <p>In bibendum justo quis nisl molestie, ut dapibus libero tristique. Integer rutrum, sem eu rutrum hendrerit, turpis urna ultrices nisl, sit amet blandit ante purus eget nisl. Vestibulum interdum maximus elit sed cursus.</p>
+      <p>Maecenas at hendrerit sapien. Donec velit dolor, dictum in molestie ut, fringilla in tortor. Nulla dui mi, suscipit et massa id, egestas luctus orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+      <p>Integer risus justo, luctus sed tempus at, gravida sed nunc. Pellentesque sagittis commodo ante. Phasellus vestibulum risus vitae mattis gravida. Nam vitae mi efficitur, venenatis tortor eget, tempus justo. Aliquam nec consequat elit. Curabitur ac sodales sem, nec consequat orci. Aliquam at velit mauris.</p>
+      <p>Nullam sit amet tortor vel orci vestibulum egestas. Proin quis nulla et metus lobortis tincidunt. Maecenas dapibus tincidunt quam sed efficitur. Mauris sed feugiat odio, congue rutrum elit. Aenean varius est a porttitor cursus. Donec ac aliquam libero. Donec sit amet sapien et tortor euismod tincidunt.</p>
+      <p>Cras non iaculis nisi, eget euismod nunc. Morbi sollicitudin risus ac velit sollicitudin, a tincidunt nunc consequat. Aenean feugiat gravida lacus, sit amet posuere turpis vehicula eu. Maecenas sollicitudin velit at turpis aliquam, id aliquam ante luctus.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent tincidunt erat a odio aliquet, mattis consectetur metus consequat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+      <p>In bibendum justo quis nisl molestie, ut dapibus libero tristique. Integer rutrum, sem eu rutrum hendrerit, turpis urna ultrices nisl, sit amet blandit ante purus eget nisl. Vestibulum interdum maximus elit sed cursus.</p>
+      <p>Maecenas at hendrerit sapien. Donec velit dolor, dictum in molestie ut, fringilla in tortor. Nulla dui mi, suscipit et massa id, egestas luctus orci. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+      <p>Integer risus justo, luctus sed tempus at, gravida sed nunc. Pellentesque sagittis commodo ante. Phasellus vestibulum risus vitae mattis gravida. Nam vitae mi efficitur, venenatis tortor eget, tempus justo. Aliquam nec consequat elit. Curabitur ac sodales sem, nec consequat orci. Aliquam at velit mauris.</p>
+      <p>Nullam sit amet tortor vel orci vestibulum egestas. Proin quis nulla et metus lobortis tincidunt. Maecenas dapibus tincidunt quam sed efficitur. Mauris sed feugiat odio, congue rutrum elit. Aenean varius est a porttitor cursus. Donec ac aliquam libero. Donec sit amet sapien et tortor euismod tincidunt.</p>
+      <p>Cras non iaculis nisi, eget euismod nunc. Morbi sollicitudin risus ac velit sollicitudin, a tincidunt nunc consequat. Aenean feugiat gravida lacus, sit amet posuere turpis vehicula eu. Maecenas sollicitudin velit at turpis aliquam, id aliquam ante luctus.</p>
+    </div>
+  </div>
+  <script>
+    var layers = document.querySelectorAll('[data-type="parallax"]');
+    window.addEventListener('scroll', function(event) {
+      var topDistance = window.scrollY;
+      layers.forEach(function(layer) {
+        var depth = layer.getAttribute('data-depth');
+        var movement = -(topDistance * depth);
+        var translate3d = 'translate3d(0, ' + movement + 'px, 0)';
+        layer.style['-webkit-transform'] = translate3d;
+        layer.style['-moz-transform'] = translate3d;
+        layer.style['-ms-transform'] = translate3d;
+        layer.style['-o-transform'] = translate3d;
+        layer.style['transform'] = translate3d;
+      });
+    });
+  </script>
+  <script src="parallax25d.bundle.js"></script>
+</body>
+</html>
