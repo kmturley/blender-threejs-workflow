@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@tweenjs/tween.js": "^18.4.2",
-    "three": "^0.110.0"
+    "three": "^0.125.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",
